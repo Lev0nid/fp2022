@@ -163,13 +163,7 @@ end = struct
   ;;
 
   let empty = []
-
-  let mapping k v =
-    if Type.occurs_in k v
-    then (* fail Occurs_check  *)
-      failwith "Occurs check failed"
-    else return (k, v)
-  ;;
+  let mapping k v = if Type.occurs_in k v then fail Occurs_check else return (k, v)
 
   let singleton k v =
     let* mapping = mapping k v in

@@ -21,7 +21,6 @@ depends: [
   "angstrom"
   "ppx_show"
   "stdio"
-  "str"
 ]
 build: [
   ["dune" "subst"] {dev}

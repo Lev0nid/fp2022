@@ -31,5 +31,4 @@
   base
   angstrom
   ppx_show
-  stdio
-  str))
+  stdio))

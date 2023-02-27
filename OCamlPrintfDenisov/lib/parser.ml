@@ -164,11 +164,16 @@ let pspec =
        ]
 ;;
 
-let pplain_text =
-  (fun s -> plain_text (Str.global_replace (Str.regexp "\\\\n") "\n" s))
-  <$> take_while1 (fun ch -> ch != '%')
+let replace_new_lines s =
+  let rec helper acc = function
+    | '\\' :: 'n' :: s -> helper ('\n' :: acc) s
+    | ch :: s -> helper (ch :: acc) s
+    | [] -> List.rev acc
+  in
+  String.of_seq @@ List.to_seq @@ helper [] @@ List.of_seq @@ String.to_seq s
 ;;
 
+let pplain_text = plain_text <$> (replace_new_lines <$> take_while1 (fun ch -> ch != '%'))
 let pformat_elm = pspec <|> pplain_text
 let pformat = many pformat_elm
 let str_to_spec_tys = Angstrom.parse_string pformat ~consume:Consume.All

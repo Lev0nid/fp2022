@@ -426,8 +426,6 @@ let infer =
   helper
 ;;
 
-Scheme.apply
-
 let std_lib_env =
   [ "printf", S (VarSet.singleton (-1), TFun (TFmt (TVar (-1)), TVar (-1)))
   ; "+", S (VarSet.empty, TFun (TInt, TFun (TInt, TInt)))

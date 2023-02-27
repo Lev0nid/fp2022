@@ -30,6 +30,6 @@
   (ocamlformat :build)
   base
   angstrom
-  ppx_show.runtime
+  ppx_show
   stdio
   str))

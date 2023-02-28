@@ -49,6 +49,36 @@
   val ignore : unit = ()
 
   $ cat << EOF | ./demo.exe -
+  > let foo = fun n -> printf (if n>0 then "positive %d" else "negative %d") n;;
+  > EOF
+  Error: : end_of_input
+
+  $ cat << EOF | ./demo.exe -
+  > let foo = fun n -> 
+  >   let fmt =  (if n>0 then "positive %d" else "negative %d") in
+  >   printf fmt n
+  > ;;
+  > EOF
+  Error: : end_of_input
+  $ cat << EOF | ./demo.exe -
+  > let temp = fun eta -> 
+  >   printf "%s %d" eta
+  > let debug = fun fmt -> if true then printf fmt else printf fmt
+  > ;;
+  > EOF
+  Error: : end_of_input
+
+  $ cat << EOF | ./demo.exe -
+  > let s = fun  s -> fun f -> fun g -> fun x -> f x (g x)
+  > let twice = fun x -> (x,x)  
+  > ;;
+  > EOF
+  val s : ('7 -> (('8 -> ('9 -> '10)) -> (('8 -> '9) -> ('8 -> '10)))) = <fun>
+  val twice : ('12 -> ('12 * '12)) = <fun>
+
+
+
+  $ cat << EOF | ./demo.exe -
   > let rec print_list = fun print_elm -> fun l ->
   > match l with
   > | [] -> ()
@@ -90,10 +120,15 @@
   > fix (fun fact -> fun n ->
   >  match n with
   >  | 0 -> 1
-  >  | m -> m * fact (n - 1))
+  >  | m -> let rez = m * fact (n - 1) in let rrr = printf "fact %d = %d\n" n rez in rez )
   > let fact5 = fact 5
   > ;;
   > EOF
+  fact 1 = 1
+  fact 2 = 2
+  fact 3 = 6
+  fact 4 = 24
+  fact 5 = 120
   val fix : ((('2 -> '5) -> ('2 -> '5)) -> ('2 -> '5)) = <fun>
   val fact : (int -> int) = <fun>
   val fact5 : int = 120

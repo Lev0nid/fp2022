@@ -168,8 +168,9 @@ end = struct
   let singleton k v =
     match v with
     | TVar b when b = k -> return []
-    | _ -> let* mapping = mapping k v in
-           return [ mapping ]
+    | _ ->
+      let* mapping = mapping k v in
+      return [ mapping ]
   ;;
 
   let find_exn k xs = List.Assoc.find_exn xs k ~equal:Int.equal

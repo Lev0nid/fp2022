@@ -166,8 +166,10 @@ end = struct
   let mapping k v = if Type.occurs_in k v then fail Occurs_check else return (k, v)
 
   let singleton k v =
-    let* mapping = mapping k v in
-    return [ mapping ]
+    match v with
+    | TVar b when b = k -> return []
+    | _ -> let* mapping = mapping k v in
+           return [ mapping ]
   ;;
 
   let find_exn k xs = List.Assoc.find_exn xs k ~equal:Int.equal

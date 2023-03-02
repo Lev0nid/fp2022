@@ -49,24 +49,26 @@
   val ignore : unit = ()
 
   $ cat << EOF | ./demo.exe -
-  > let foo = fun n -> printf (if n>0 then "positive %d" else "negative %d") n;;
+  > let foo = fun n -> printf (match n>0 with | true -> "positive %d" | false -> "negative %d") n;;
   > EOF
-  Error: : end_of_input
+  val foo : (int -> unit) = <fun>
 
   $ cat << EOF | ./demo.exe -
-  > let foo = fun n -> 
-  >   let fmt =  (if n>0 then "positive %d" else "negative %d") in
+  > let foo = fun n ->
+  >   let fmt = (match n>0 with | true -> "positive %d" | false -> "negative %d") in
   >   printf fmt n
   > ;;
   > EOF
-  Error: : end_of_input
+  val foo : (int -> unit) = <fun>
+
   $ cat << EOF | ./demo.exe -
-  > let temp = fun eta -> 
+  > let temp = fun eta ->
   >   printf "%s %d" eta
-  > let debug = fun fmt -> if true then printf fmt else printf fmt
+  > let debug = fun fmt -> match true with | true -> printf fmt | false -> printf fmt
   > ;;
   > EOF
-  Error: : end_of_input
+  val temp : (string -> (int -> unit)) = <fun>
+  val debug : ('10 format -> '10) = <fun>
 
   $ cat << EOF | ./demo.exe -
   > let s = fun  s -> fun f -> fun g -> fun x -> f x (g x)

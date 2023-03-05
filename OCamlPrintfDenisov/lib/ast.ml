@@ -1,13 +1,16 @@
 type id = string [@@deriving eq, show { with_path = false }]
 
-and const =
-  | CNil
-  | CBool of bool
-  | CInt of int
-  | CString of string * format_elm list
+type texpr =
+  | TBool
+  | TInt
+  | TVar of int
+  | TFmt of texpr
+  | TTpl of texpr list
+  | TList of texpr
+  | TFun of texpr * texpr
 [@@deriving eq, show { with_path = false }]
 
-and format_elm =
+type format_elm =
   | PlainText of string
   | StrSpec
   | BoolSpec
@@ -15,14 +18,21 @@ and format_elm =
   | ASpec
 [@@deriving eq, show { with_path = false }]
 
-and brnch = ptrn * expr
+type const =
+  | CNil
+  | CBool of bool
+  | CInt of int
+  | CString of string * format_elm list
+[@@deriving eq, show { with_path = false }]
 
-and ptrn =
+type ptrn =
   | PConst of const
   | PVar of id
   | PCons of ptrn * ptrn
   | PTpl of ptrn list
 [@@deriving eq, show { with_path = false }]
+
+type brnch = ptrn * expr
 
 and expr =
   | EConst of const
@@ -34,18 +44,9 @@ and expr =
   | EMatch of expr * brnch list
 [@@deriving eq, show { with_path = false }]
 
-and texpr =
-  | TBool
-  | TInt
-  | TVar of int
-  | TFmt of texpr
-  | TTpl of texpr list
-  | TList of texpr
-  | TFun of texpr * texpr
-[@@deriving eq, show { with_path = false }]
-
 and bnd = bool * id * expr * texpr option [@@deriving eq, show { with_path = false }]
-and prog = bnd list [@@deriving eq, show { with_path = false }]
+
+type prog = bnd list [@@deriving eq, show { with_path = false }]
 
 let pp_const fmt = function
   | CNil -> Format.fprintf fmt "[]"

@@ -13,8 +13,8 @@ end
 
 module Interpreter (M : ERROR_MONAD) : sig
   type value
-  and r_ok
-  and r_err
+  type r_ok
+  type r_err
 
   val pp_r_ok : formatter -> r_ok -> unit
   val pp_r_err : formatter -> r_err -> unit
@@ -32,7 +32,12 @@ end = struct
 
   let ( let* ) m f = bind m ~f
 
-  type env = value BindMap.t
+  type r_err =
+    | Div0
+    | Cmp_fun
+    | Unbound of string
+    | Incorrect_texpr of value
+    | Non_exhaustive of ptrn list
 
   and value =
     | VInt of int
@@ -42,12 +47,7 @@ end = struct
     | VList of value list
     | VFun of ((value, r_err) t Lazy.t -> (value, r_err) t)
 
-  and r_err =
-    | Div0
-    | Cmp_fun
-    | Unbound of string
-    | Incorrect_texpr of value
-    | Non_exhaustive of ptrn list
+  type env = value BindMap.t
 
   let rec equal_value v1 v2 =
     match v1, v2 with
@@ -303,8 +303,8 @@ end = struct
        with
        | Some (case_env, body) ->
          case_env
-         >>= fun case_env -> eval body (BindMap.add_seq (BindMap.to_seq case_env) env)
-       | None -> fail (Non_exhaustive (List.map (fun (ptrn, _) -> ptrn) cases)))
+         >>= fun case_env -> eval body (BindMap.union (fun _ x _ -> Some x) case_env env)
+       | None -> fail (Non_exhaustive (List.map fst cases)))
     | EFun (prm, body) -> return (vfun (fun arg -> eval body (BindMap.add prm arg env)))
 
   and add_bnd (is_rec, name, expr, t) env =
